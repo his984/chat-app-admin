@@ -11,11 +11,18 @@ module.exports = {
             },
             status: {
                 default: 'active',
-                type: Sequelize.ENUM('active', 'blocked')
+                type: Sequelize.ENUM('active', 'blocked' , 'invited', 'reject_invitation')
             },
             reason: {
                 allowNull: true,
                 type: Sequelize.STRING
+            },
+            by: {
+                type: Sequelize.INTEGER,
+                references: {
+                    model: {tableName: 'Users'},
+                    key: 'id'
+                },
             },
             chatId: {
                 type: Sequelize.INTEGER,

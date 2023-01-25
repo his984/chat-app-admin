@@ -12,16 +12,17 @@ module.exports = (sequelize, DataTypes) => {
         static associate(models) {
             Chat.belongsTo(models.User, {
                 foreignKey: 'createdBy',
-                onDelete: 'CASCADE'
+                onDelete: 'CASCADE',
+                as : 'owner'
             });
-            Chat.belongsToMany(models.User, {through: models.ChatUser})
+            Chat.belongsToMany(models.User, {through: models.ChatUser , foreignKey : 'chatId'})
             Chat.hasMany(models.ChatUser)
 
         }
     }
 
     Chat.init({
-        title: DataTypes.STRING,
+        subject: DataTypes.STRING,
 
     }, {
         sequelize,

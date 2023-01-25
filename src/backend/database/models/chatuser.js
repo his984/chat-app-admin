@@ -12,11 +12,20 @@ module.exports = (sequelize, DataTypes) => {
         static associate(models) {
             ChatUser.belongsTo(models.Chat);
             ChatUser.belongsTo(models.User);
+            ChatUser.belongsTo(models.User, {
+                foreignKey: 'by',
+                as: 'statusBy'
+            });
+
         }
     }
 
     ChatUser.init({
-        status: DataTypes.ENUM
+        status: DataTypes.ENUM('blocked', 'active', 'invited', 'reject_invitation'),
+        // by: DataTypes.BIGINT,
+        reason: DataTypes.STRING,
+        // userId: DataTypes.BIGINT,
+        // chatId: DataTypes.BIGINT,
     }, {
         sequelize,
         modelName: 'ChatUser',

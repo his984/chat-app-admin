@@ -10,16 +10,22 @@ module.exports = (sequelize, DataTypes) => {
          * The `models/index` file will call this method automatically.
          */
         static associate(models) {
-            User.belongsToMany(models.Chat, {through: models.ChatUser});
+            User.belongsToMany(models.Chat, {through: models.ChatUser , foreignKey: 'userId' });
             User.hasMany(models.ChatUser);
-            User.hasMany(models.Session)
+            User.hasMany(models.Chat  );
+
         }
     }
 
     User.init({
         firstName: DataTypes.STRING,
         lastName: DataTypes.STRING,
-        email: DataTypes.STRING
+        email: DataTypes.STRING,
+        phone: DataTypes.STRING,
+        role: DataTypes.STRING,
+        password: DataTypes.STRING,
+        accessToken: DataTypes.STRING,
+        createdAt : DataTypes.DATE
     }, {
         sequelize,
         modelName: 'User',

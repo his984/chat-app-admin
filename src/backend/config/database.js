@@ -1,24 +1,24 @@
-const {database = 'chay_app_admin', username = 'hisham', password = 'password'} = process.env
-
+require("dotenv").config();
+const {DATABASE_NAME = 'chay_app_admin', DATABASE_USERNAME = 'hisham', DATABASE_PASSWORD = 'password'} = process.env
 module.exports = {
     "development": {
-        "username": username,
-        "password": password,
-        "database": database,
+        "username": DATABASE_USERNAME,
+        "password": DATABASE_PASSWORD,
+        "database": DATABASE_NAME,
         "host": "127.0.0.1",
         "dialect": "mysql"
     },
     "test": {
-        "username": username,
-        "password": password,
-        "database": database,
+        "username": DATABASE_USERNAME,
+        "password": DATABASE_PASSWORD,
+        "database": DATABASE_NAME,
         "host": "127.0.0.1",
         "dialect": "mysql"
     },
     "production": {
-        "username": username,
-        "password": password,
-        "database": database,
+        "username": DATABASE_USERNAME,
+        "password": DATABASE_PASSWORD,
+        "database": DATABASE_NAME,
         "host": "127.0.0.1",
         "dialect": "mysql"
     },
