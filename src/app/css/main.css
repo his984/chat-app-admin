@@ -1,6 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+#loader {
+    z-index: 999999999999999999999999;
+}
 .lds-spinner {
     color: official;
     display: inline-block;

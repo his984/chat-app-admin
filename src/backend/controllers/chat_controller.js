@@ -24,50 +24,97 @@ exports.createChat = async (req, res) => {
 exports.getChat = async (req, res) => {
 
     const role = req.auth.role;
-    const where = {
-        id: req.params.chatId,
+
+    const query = {
+        where: {
+            id: req.params.chatId,
+        },
+        attributes: ['id', 'subject']
     };
 
     if (role !== 'admin') {
-        where['ChatUsers.userId'] = req.auth.userId;
-        where['ChatUsers.status'] = {[Op.in]: ['active', 'invited']};
+        query['include'] = [];
+        query['include'].push({
+            model: db.ChatUser,
+            where: {
+                'userId': req.auth.userId,
+                'status': {[Op.in]: ['active', 'invited']}
+            },
+            attributes: []
+        })
+        query['include'].push({
+            model: db.User,
+            as: 'owner',
+            attributes: ['firstName', 'lastName', 'email', 'id']
+        })
     }
 
-    res.json(await db.Chat.findOne({
-        where, include: 'owner'
-    }))
+
+    res.json(await db.Chat.findOne(query))
 }
 
 exports.getChats = async (req, res) => {
-
+    const page = Math.max((req.query.page ?? 1) - 1, 0);
     const role = req.auth.role;
-    const where = {
-        id: req.params.chatId,
+    const query = {
+        offset : page ,
+        limit : 10 ,
+
     };
 
     if (role !== 'admin') {
-        where['ChatUsers.userId'] = req.auth.userId;
-        where['ChatUsers.status'] = 'active';
+        query['include'] = [];
+        query['include'].push({
+            model: db.ChatUser,
+            where: {
+                'userId': req.auth.userId,
+                'status': 'active'
+            },
+            attributes: []
+        })
+        query['include'].push({
+            model: db.User,
+            as: 'owner',
+            attributes: ['firstName', 'lastName', 'email', 'id']
+        })
     }
-    res.json(await db.Chat.findAll({
-        where, include: 'owner'
-    }))
+    const result = await db.Chat.findAndCountAll(query);
+    result.rows = result.rows.map(({id, subject, owner}) => {
+        return {id, subject, owner};
+    })
+    res.json(result)
 
 
 }
 exports.getInvitations = async (req, res) => {
-
+    const page = Math.max((req.query.page ?? 1) - 1, 0);
     const role = req.auth.role;
-    const where = {
-        id: req.params.chatId,
+    const query = {
+        offset : page ,
+        limit : 10 ,
+
     };
 
     if (role !== 'admin') {
-        where['ChatUsers.userId'] = req.auth.userId;
-        where['ChatUsers.status'] = 'invited';
+        query['include'] = [];
+        query['include'].push({
+            model: db.ChatUser,
+            where: {
+                'userId': req.auth.userId,
+                'status': 'invited'
+            },
+            attributes: []
+        })
+        query['include'].push({
+            model: db.User,
+            as: 'owner',
+            attributes: ['firstName', 'lastName', 'email', 'id']
+        })
     }
-    res.json(await db.Chat.findAll({
-        where, include: 'owner'
-    }))
+    const result = await db.Chat.findAndCountAll(query);
+    result.rows = result.rows.map(({id, subject, owner}) => {
+        return {id, subject, owner};
+    })
+    res.json(result)
 }
 

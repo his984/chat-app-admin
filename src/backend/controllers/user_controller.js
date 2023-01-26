@@ -7,7 +7,7 @@ exports.getUsers = async (req, res) => {
     const id = (req.auth && req.auth.userId) ? req.auth.userId : 0;
     const page = Math.max((req.query.page ?? 1) - 1, 0);
     const search = req.query.search ?? '';
-    const limit = Math.max(parseInt(req.query.limit ?? 1), 1);
+    const limit = Math.max(parseInt(req.query.limit ?? 10), 10);
     const whereQ = {
         id: {[Op.not]: id},
         [Op.or]: [

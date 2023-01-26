@@ -18,12 +18,20 @@ export const chatsSlice = createSlice({
     reducers: {
         updateChats(state, action) {
             state.chatsPagination = action.payload
-            state.init = true;
+            state.chatsInit = true;
         },
+        updateInvitations(state, action) {
+
+            state.invitationsPagination = action.payload
+            state.invitationInit = true;
+        },
+        revokeChatInit(state) {
+            state.chatsInit = false;
+        }
     },
 })
 
 
-export const {updateChats} = chatsSlice.actions
+export const {updateChats, updateInvitations} = chatsSlice.actions
 
 export default chatsSlice.reducer

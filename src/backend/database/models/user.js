@@ -10,9 +10,12 @@ module.exports = (sequelize, DataTypes) => {
          * The `models/index` file will call this method automatically.
          */
         static associate(models) {
-            User.belongsToMany(models.Chat, {through: models.ChatUser , foreignKey: 'userId' });
-            User.hasMany(models.ChatUser);
-            User.hasMany(models.Chat  );
+            User.belongsToMany(models.Chat, {through: models.ChatUser, foreignKey: 'userId'});
+            User.hasMany(models.ChatUser, {foreignKey: 'userId'});
+            User.hasMany(models.Chat, {
+                foreignKey: 'createdBy',
+                as: 'owner'
+            });
 
         }
     }
@@ -25,7 +28,7 @@ module.exports = (sequelize, DataTypes) => {
         role: DataTypes.STRING,
         password: DataTypes.STRING,
         accessToken: DataTypes.STRING,
-        createdAt : DataTypes.DATE
+        createdAt: DataTypes.DATE
     }, {
         sequelize,
         modelName: 'User',

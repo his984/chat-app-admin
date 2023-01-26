@@ -1,4 +1,4 @@
-import {Navbar} from "../components/navbar";
+import {AppNavbar} from "../components/navbar";
 import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {displayLoader, hideLoader} from "../../core/helpers";
@@ -34,7 +34,7 @@ export function AuthLayout({children}) {
     return (
 
         <div className="flex flex-col overflow-x-hidden min-h-screen">
-            <Navbar/>
+            <AppNavbar/>
             <main className="h-full p-10">
                 {isLoading ? <> </> : children}
             </main>

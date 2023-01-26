@@ -2,12 +2,11 @@ import {Login} from "../views/pages/guest/login.jsx";
 import {Register} from "../views/pages/guest/register.jsx";
 import {Profile} from "../views/pages/global/profile";
 import {Users} from "../views/pages/global/users";
-import {UserIndex} from "../views/pages/user/user_index";
 import {Logout} from "../views/pages/global/logout";
-import {UserChat} from "../views/pages/user/user_chat";
-import {AdminChat} from "../views/pages/admin/admin_chat";
 import {UserChats} from "../views/pages/user/user_chats";
 import {AdminChats} from "../views/pages/admin/admin_chats";
+import {Home} from "../views/pages/global/home";
+import {Chat} from "../views/pages/global/chat";
 // add every role's pages as an array then export it to use it in main file
 const guestPages = [
     {
@@ -19,7 +18,7 @@ const guestPages = [
         element: <Register/>
     },
     {
-        path : '/logout',
+        path: '/logout',
         element: <Logout/>
     }
 ];
@@ -27,7 +26,7 @@ const guestPages = [
 const userPages = [
     {
         path: '/normal/',
-        element: <UserIndex/>
+        element: <Home/>
     },
     {
         path: '/normal/profile',
@@ -42,13 +41,17 @@ const userPages = [
         element: <UserChats/>
     },
     {
-        path: '/normal/chats/:chatId',
-        element: <UserChat />,
+        path: '/chats/:chatId',
+        element: <Chat/>,
 
     }
 
 ];
 const adminPages = [
+    {
+        path: '/admin/',
+        element: <Home/>
+    },
     {
         path: '/admin/profile',
         element: <Profile/>
@@ -61,11 +64,8 @@ const adminPages = [
         path: '/admin/chats',
         element: <AdminChats/>
     },
-    {
-        path: '/admin/chats/:chatId',
-        element: <AdminChat/>
-    }
+
 ];
 
 
-export {guestPages , adminPages , userPages}
+export {guestPages, adminPages, userPages}

@@ -15,15 +15,14 @@ module.exports = (sequelize, DataTypes) => {
                 onDelete: 'CASCADE',
                 as : 'owner'
             });
-            Chat.belongsToMany(models.User, {through: models.ChatUser , foreignKey : 'chatId'})
-            Chat.hasMany(models.ChatUser)
+           Chat.belongsToMany(models.User, {through: models.ChatUser , foreignKey : 'chatId'})
+            Chat.hasMany(models.ChatUser , { foreignKey : 'chatId' })
 
         }
     }
 
     Chat.init({
         subject: DataTypes.STRING,
-
     }, {
         sequelize,
         modelName: 'Chat',

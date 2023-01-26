@@ -11,6 +11,7 @@ const endpoints = {
     },
     chats: {
         base: `${base}/chats/`,
+        invitations: `${base}/chats/invitations`,
         users: `${base}/chats/users`
     }
 }

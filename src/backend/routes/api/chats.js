@@ -3,7 +3,7 @@ const chatsRouter = express.Router();
 const {getUsers} = require("../../controllers/user_controller");
 const {body} = require("express-validator");
 const db = require("../../database/models");
-const {createChat, getChats} = require("../../controllers/chat_controller");
+const {createChat, getChats, getChat, getInvitations} = require("../../controllers/chat_controller");
 
 
 chatsRouter.get('/', (req, res) => {
@@ -12,8 +12,14 @@ chatsRouter.get('/', (req, res) => {
         res.status(400).json()
     })
 })
+chatsRouter.get('/invitations', (req, res) => {
+    getInvitations(req, res).catch((reason) => {
+        console.log(reason)
+        res.status(400).json()
+    })
+})
 chatsRouter.get('/:chatId', (req, res) => {
-    getChats(req, res).catch((reason) => {
+    getChat(req, res).catch((reason) => {
         console.log(reason)
         res.status(400).json()
     })
