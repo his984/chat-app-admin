@@ -9,7 +9,7 @@ const http = require('http');
 const app = express();
 const server = http.createServer(app);
 const {Server} = require("socket.io");
-const {isValidToken} = require("./backend/utils");
+const {isValidToken, checkMessage, getChatUsers} = require("./backend/utils");
 const db = require("./backend/database/models");
 const {Op} = require("sequelize");
 const io = new Server(server, {
@@ -55,10 +55,10 @@ io.use(async (socket, next) => {
     const token = socket.handshake.auth.token;
     const chatId = socket.handshake.auth.chatId;
     const {userId, role} = isValidToken(token)
-    if (role !== 'admin') {
+    if (role !== 'admin' || !socket.user) {
         const chatUser = await db.ChatUser.findOne({where: {userId, chatId, status: {[Op.in]: ['active', 'invited']}}})
         if (!!chatUser) {
-            chatUser.stat = 'active';
+            chatUser.status = 'active';
             await chatUser.save()
         } else {
             return next(new Error(JSON.stringify({
@@ -66,8 +66,28 @@ io.use(async (socket, next) => {
             })));
         }
     }
-    socket.user = await db.User.findByPk(userId)
-    socket.chat = await db.Chat.findByPk(chatId)
+    if (!socket.user) {
+        socket.user = await db.User.findByPk(userId, {
+            attributes: ['id', 'firstName', 'lastName', 'email', 'phone']
+        })
+
+        socket.chat = await db.Chat.findByPk(chatId)
+        socket.messages = (await db.Message.findAll({
+            where: {
+                chatId: chatId,
+            },
+            include: [
+                {
+                    model: db.User,
+                    as: 'sender',
+                    attributes: ['id', 'firstName', 'lastName', 'email', 'phone']
+                }
+            ]
+        })).map((message) => {
+            return message.get({plain: true});
+        });
+        socket.users = await getChatUsers(socket.user.id, socket.chat.id)
+    }
     return next();
 
 });
@@ -75,22 +95,107 @@ io.use(async (socket, next) => {
 
 io.on('connection', (socket) => {
     socket.join(socket.chat.id)
-    const {id, firstName, lastName, email, phone} = socket.user
-    io.to(socket.id).emit('init-info', {chat: socket.chat, user: {id, firstName, lastName, email, phone}})
-    socket.on('message', (data, callback) => {
-        callback({
-            status: '',
-            reason: ""
-        })
-        io.to(socket.chat.id).emit('message', data)
+
+    io.to(socket.id).emit('init-info', {
+        chat: socket.chat,
+        user: socket.user,
+        users: socket.users,
+        messages: socket.messages
     })
-    if (socket.user.role === 'admin') {
-        socket.on('block', (userId) => {
+
+    socket.on('message', (message, callback) => {
+        db.ChatUser.findOne({
+            where: {
+                userId: socket.user.id,
+                chatId: socket.chat.id
+            },
+            attributes: ['status']
+        }).then((chatUser) => {
+            if (chatUser.status === 'blocked') {
+                callback({
+                    code: 403,
+                    description: 'you are blocked'
+                });
+            } else if (chatUser.status === 'suspend') {
+                callback({
+                    code: 404,
+                    description: 'you are suspend'
+                });
+            } else {
+
+                checkMessage(message, socket.user.id, socket.chat.id).then((message) => {
+                    io.to(socket.chat.id).except(socket.id).emit('message', message);
+                    callback({
+                        code: 200,
+                        description: 'message sent',
+                    })
+                }).catch((er) => {
+                    callback({
+                        code: 400,
+                        description: er.message
+                    })
+                })
+
+
+            }
+        })
+
+    })
+    if (socket.user.role === 'admin' || socket.chat.createdBy === socket.user.id) {
+
+        socket.on('add-users', (selectedUsers, callback) => {
+
+            db.ChatUser.bulkCreate(selectedUsers.map(userId => {
+                return {
+                    status: 'invited',
+                    userId,
+                    by: socket.user.id,
+                    chatId: socket.chat.id,
+                }
+            })).then(() => {
+
+                 getChatUsers(socket.user.id, socket.chat.id).then((users) => {
+                     socket.users = users
+                     io.to(socket.chat.id).emit('update-users', users)
+                 })
+
+
+                callback({
+                    code: 200,
+                    description: "Users added successfully"
+                })
+            }).catch(() => {
+                callback({
+                    code: 400,
+                    description: 'Something is wrong'
+                })
+            })
 
 
         });
-        socket.on('unblock', (userId) => {
+        socket.on('action', ({name, userId, chatId}, callback) => {
+            let status = false;
+            if (name === 'blocked') {
 
+                status = 'blocked';
+
+            } else if (name === 'unblocked' || name === 'unsuspend') {
+                status = 'active'
+            } else if (name === 'suspend') {
+                status = 'suspend'
+            }
+            if (status) {
+                db.ChatUser.update({status}, {
+                    where: {
+                        userId,
+                        chatId
+                    }
+                }).then(() => {
+                    callback({
+                        code: 200
+                    })
+                })
+            }
 
         });
 

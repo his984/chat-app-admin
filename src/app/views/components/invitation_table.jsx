@@ -5,6 +5,7 @@ import {get} from "../../core/http_client";
 import {endpoints} from "../../core/endpoint";
 import {updateInvitations} from "../../core/state/slices/chatsSlice";
 import {useDispatch, useSelector} from "react-redux";
+import {setInvitations} from "../../core/state/slices/homeSlice";
 
 export function InvitationTable({
                                     slice = 'chats',
@@ -31,7 +32,12 @@ export function InvitationTable({
     const getInvitations = () => {
         beforeLoad()
         get(`${endpoints.chats.invitations}?page=${invitationsPage}`).then((data) => {
-            dispatch(updateInvitations(data))
+            if(slice === 'chats'){
+                dispatch(updateInvitations(data))
+            }else {
+                dispatch(setInvitations(data.rows))
+            }
+
         }).finally(() => {
             afterLoad()
         })
@@ -45,10 +51,10 @@ export function InvitationTable({
             getInvitations()
         }
 
-    }, [])
+    }, [isInvitationsInit])
 
 
-    return <>
+    return <div >
         <Table>
             <Table.Head>
                 <Table.HeadCell>
@@ -101,6 +107,6 @@ export function InvitationTable({
             </div> : <></>
         }
 
-    </>
+    </div>
 
 }

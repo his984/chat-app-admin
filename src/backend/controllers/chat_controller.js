@@ -57,8 +57,8 @@ exports.getChats = async (req, res) => {
     const page = Math.max((req.query.page ?? 1) - 1, 0);
     const role = req.auth.role;
     const query = {
-        offset : page ,
-        limit : 10 ,
+        offset: page,
+        limit: 10,
 
     };
 
@@ -90,8 +90,8 @@ exports.getInvitations = async (req, res) => {
     const page = Math.max((req.query.page ?? 1) - 1, 0);
     const role = req.auth.role;
     const query = {
-        offset : page ,
-        limit : 10 ,
+        offset: page,
+        limit: 10,
 
     };
 
@@ -118,3 +118,20 @@ exports.getInvitations = async (req, res) => {
     res.json(result)
 }
 
+
+exports.rejectInvitation = async (req, res) => {
+    const chatUser = await db.ChatUser.findOne({
+        where: {
+            chatId: req.params.chatId,
+            userId: req.auth.userId
+        }
+    })
+    if (chatUser) {
+        chatUser.status = 'reject_invitation';
+        await chatUser.save();
+    }
+
+    res.json({})
+
+
+}

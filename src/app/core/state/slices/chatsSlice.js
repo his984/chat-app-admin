@@ -27,11 +27,14 @@ export const chatsSlice = createSlice({
         },
         revokeChatInit(state) {
             state.chatsInit = false;
+        },
+        revokeInvitationInit(state) {
+            state.invitationInit = false;
         }
     },
 })
 
 
-export const {updateChats, updateInvitations} = chatsSlice.actions
+export const {updateChats, updateInvitations, revokeChatInit , revokeInvitationInit} = chatsSlice.actions
 
 export default chatsSlice.reducer

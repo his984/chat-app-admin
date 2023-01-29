@@ -21,11 +21,8 @@ module.exports = (sequelize, DataTypes) => {
     }
 
     ChatUser.init({
-        status: DataTypes.ENUM('blocked', 'active', 'invited', 'reject_invitation'),
-        // by: DataTypes.BIGINT,
+        status: DataTypes.ENUM('blocked', 'active', 'suspend', 'invited', 'reject_invitation'),
         reason: DataTypes.STRING,
-        // userId: DataTypes.BIGINT,
-        // chatId: DataTypes.BIGINT,
     }, {
         sequelize,
         modelName: 'ChatUser',

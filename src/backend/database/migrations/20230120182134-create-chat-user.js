@@ -11,7 +11,7 @@ module.exports = {
             },
             status: {
                 default: 'active',
-                type: Sequelize.ENUM('active', 'blocked' , 'invited', 'reject_invitation')
+                type: Sequelize.ENUM('active', 'blocked' , 'suspend' , 'invited', 'reject_invitation')
             },
             reason: {
                 allowNull: true,

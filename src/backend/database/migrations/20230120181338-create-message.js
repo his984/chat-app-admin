@@ -10,13 +10,9 @@ module.exports = {
                 type: Sequelize.INTEGER
             },
             content: {
-                type: Sequelize.STRING
+                type: Sequelize.TEXT
             },
-            type: {
-                default: 'group',
-                type: Sequelize.ENUM('group', 'direct')
-            },
-            ownerId: {
+            senderId: {
                 type: Sequelize.INTEGER,
                 references: {
                     model: {tableName: 'Users'},
@@ -26,7 +22,7 @@ module.exports = {
                 onUpdate: 'cascade',
                 onDelete: 'cascade',
             },
-            receiverId: {
+            chatId: {
                 type: Sequelize.INTEGER,
                 references: {
                     model: {tableName: 'Chats'},

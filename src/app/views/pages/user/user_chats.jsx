@@ -10,10 +10,22 @@ export function UserChats() {
 
     const [isLoading, setIsLoading] = useState(false)
     const [active, setActive] = useState(0);
-
+    const [showCreationModal, setShowCreationModal] = useState(false)
     return <AuthLayout>
 
-        <ChatModal/>
+        <div className="mb-5 flex flex-row justify-end">
+            <button type="button"
+                    onClick={() => {
+                        setShowCreationModal(true);
+                    }}
+                    className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Create
+                Chat
+            </button>
+            <ChatModal show={showCreationModal} onClose={() => {
+                setShowCreationModal(false)
+            }}/>
+        </div>
+
         <div className="my-4 border-b border-gray-300 dark:border-gray-700">
             <ul className="flex  justify-between -mb-px text-sm font-medium text-center"
                 role="tablist">
@@ -44,9 +56,9 @@ export function UserChats() {
         {isLoading ? <div className='flex flex-row justify-center items-center h-[20rem]'>
                 <Spinner aria-label="Center-aligned Loading spinner" size="xl"/>
             </div> :
-            <div>
+            <div className="pt-4">
                 <div
-                    className={`${active === 1 ? 'hidden' : ''}  p-4 rounded-lg bg-gray-50 dark:bg-gray-800 max-w-2xl mx-auto`}
+                    className={`${active === 1 ? 'hidden' : ''}  p-4 rounded-lg bg-gray-50 dark:bg-gray-800 max-w-2xl mx-auto overflow-x-auto`}
                     role="tabpanel"
                 >
                     <ChatTable withPagination={true} beforeLoad={() => {
@@ -56,7 +68,7 @@ export function UserChats() {
                     }}/>
                 </div>
                 <div
-                    className={`${active === 0 ? 'hidden' : ''}  p-4 rounded-lg bg-gray-50 dark:bg-gray-800 max-w-2xl mx-auto`}
+                    className={`${active === 0 ? 'hidden' : ''}  p-4 rounded-lg bg-gray-50 dark:bg-gray-800 max-w-2xl mx-auto overflow-x-auto`}
                     role="tabpanel"
                 >
                     <InvitationTable withPagination={true} beforeLoad={() => {

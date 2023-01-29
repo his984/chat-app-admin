@@ -8,6 +8,7 @@ import {get} from "../../../core/http_client";
 import {endpoints} from "../../../core/endpoint";
 import {displayLoader, hideLoader} from "../../../core/helpers";
 import {updatePage, updateSearch, updateUsers} from "../../../core/state/slices/usersSlice";
+import {ChatModal} from "../../components/chat_modal";
 
 export function Users() {
     const usersPagination = useSelector((state) => state.users.usersPagination)
@@ -17,9 +18,9 @@ export function Users() {
     const [filterType, setFilterType] = useState('');
     const page = useSelector((state) => state.users.page)
     const search = useSelector((state) => state.users.search);
-    const is_authenticated = useSelector((state) => state.auth.is_authenticated)
     const limit = 10;
 
+    const [startChatWith, setStartChatWith] = useState({})
 
     const getUsers = () => {
         displayLoader()
@@ -45,7 +46,7 @@ export function Users() {
             setIsLoading(false);
             hideLoader()
         })
-    }, [is_authenticated])
+    }, [])
 
 
     const onPageChange = (p) => {
@@ -58,6 +59,15 @@ export function Users() {
 
 
     return <AuthLayout>
+
+
+        {!!startChatWith.id ? <ChatModal show={startChatWith.id > 0} defaultSearch={startChatWith.firstName}
+                                         defaultSelectedUsers={[startChatWith.id]} onClose={() => {
+                setStartChatWith({})
+            }}/>
+            :
+            <></>
+        }
 
         <div className="flex flex-col">
 
@@ -93,9 +103,11 @@ export function Users() {
                 <div className="flex flex-row flex-wrap justify-between my-4 max-w-2xl mx-auto">
 
                     <div className="flex items-center mb-4">
-                        <input id="name-filter" type="radio"  name="filter"
-                               defaultChecked={ filterType === 'name' }
-                               onChange={(e) => { setFilterType('name') }}
+                        <input id="name-filter" type="radio" name="filter"
+                               defaultChecked={filterType === 'name'}
+                               onChange={(e) => {
+                                   setFilterType('name')
+                               }}
                                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
                         <label htmlFor="name-filter"
                                className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
@@ -104,9 +116,11 @@ export function Users() {
                     </div>
 
                     <div className="flex items-center mb-4">
-                        <input id="join-date-filter" type="radio"  name="filter"
-                               defaultChecked={ filterType === 'join_date' }
-                               onChange={(e) => { setFilterType('join_date') }}
+                        <input id="join-date-filter" type="radio" name="filter"
+                               defaultChecked={filterType === 'join_date'}
+                               onChange={(e) => {
+                                   setFilterType('join_date')
+                               }}
                                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
                         <label htmlFor="join-date-filter"
                                className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
@@ -114,11 +128,13 @@ export function Users() {
                         </label>
                     </div>
                     <div className="flex items-center mb-4">
-                        <input id="reset-filter" type="radio"  name="filter"
-                               onChange={(e) => { setFilterType('') }}
-                               defaultChecked={ filterType === '' }
+                        <input id="reset-filter" type="radio" name="filter"
+                               onChange={(e) => {
+                                   setFilterType('')
+                               }}
+                               defaultChecked={filterType === ''}
                                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
-                        <label  htmlFor="reset-filter"
+                        <label htmlFor="reset-filter"
                                className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
                             Default
                         </label>
@@ -139,7 +155,9 @@ export function Users() {
                                 }
                                 return 0;
                             }).map((user) => {
-                                return (<UserAvatar key={user.id} user={user}/>)
+                                return (<UserAvatar key={user.id} user={user} onStartChat={() => {
+                                    setStartChatWith(user)
+                                }}/>)
                             })
                         }
 
