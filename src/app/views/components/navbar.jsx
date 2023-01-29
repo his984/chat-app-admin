@@ -1,10 +1,13 @@
 import {Link, useLocation} from "react-router-dom";
 import {DarkThemeToggle, Navbar} from "flowbite-react";
 import Logo from '../../assets/logo.svg'
+import {useSelector} from "react-redux";
 
 export function AppNavbar() {
     const pathname = useLocation().pathname;
-    const basePath = "/normal";
+    const basePath = "/" + (useSelector((state) => state.auth.userData.role) ?? 'normal');
+
+
     return (
         <Navbar>
             <Navbar.Brand href="/">

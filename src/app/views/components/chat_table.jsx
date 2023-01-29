@@ -31,6 +31,7 @@ export function ChatTable({
         beforeLoad()
 
         get(`${endpoints.chats.base}?page=${chatsPage}`).then((data) => {
+            console.log(data)
             if (slice === 'chats')
                 dispatch(updateChats(data))
             else

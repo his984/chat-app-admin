@@ -61,9 +61,14 @@ exports.getChats = async (req, res) => {
         limit: 10,
 
     };
-
+    query['include'] = [];
+    query['include'].push({
+        model: db.User,
+        as: 'owner',
+        attributes: ['firstName', 'lastName', 'email', 'id']
+    })
     if (role !== 'admin') {
-        query['include'] = [];
+
         query['include'].push({
             model: db.ChatUser,
             where: {
@@ -72,11 +77,7 @@ exports.getChats = async (req, res) => {
             },
             attributes: []
         })
-        query['include'].push({
-            model: db.User,
-            as: 'owner',
-            attributes: ['firstName', 'lastName', 'email', 'id']
-        })
+
     }
     const result = await db.Chat.findAndCountAll(query);
     result.rows = result.rows.map(({id, subject, owner}) => {
