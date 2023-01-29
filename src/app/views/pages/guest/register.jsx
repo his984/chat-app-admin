@@ -10,9 +10,9 @@ import {setOrUpdateAuthenticationInfo} from "../../../core/state/slices/authSlic
 import {useDispatch} from "react-redux";
 
 const formSchema = Yup.object().shape({
-    firstName: Yup.string().trim().min(4, "first name length should be at least 4 characters")
+    firstName: Yup.string().trim().min(3, "first name length should be at least 4 characters")
         .max(255, "first name cannot exceed more than 12 characters").required(),
-    lastName: Yup.string().trim().min(4, "last name length should be at least 4 characters").required()
+    lastName: Yup.string().trim().min(3, "last name length should be at least 4 characters").required()
         .max(255, "last name cannot exceed more than 12 characters").required(),
     email: Yup.string().email("Field should contain a valid e-mail").max(255),
     phone: Yup.string().trim().matches(/^[0-9]{9}$/, 'phone number must be correct'),

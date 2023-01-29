@@ -7,7 +7,7 @@ const db = require("../../database/models");
 // login
 authRouter.post('/login',
     body('email').isEmail(),
-    body('password').isLength({min: 4, max: 12}),
+    body('password').isLength({min: 3, max: 12}),
     function (req, res) {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -20,8 +20,8 @@ authRouter.post('/login',
 
 // register
 authRouter.post('/register',
-    body('firstName').isString().isLength({min: 4, max: 255}),
-    body('lastName').isString().isLength({min: 4, max: 255}),
+    body('firstName').isString().isLength({min: 3, max: 255}),
+    body('lastName').isString().isLength({min: 3, max: 255}),
     body('phone').isString().custom((phone) => {
         if (!/^[0-9]{9}$/.test(phone)) {
             throw new Error('Phone is not correct');
@@ -62,8 +62,8 @@ authRouter.post('/register',
 
 
 authRouter.post('/profile',
-    body('firstName').isString().isLength({min: 4, max: 255}).optional(),
-    body('lastName').isString().isLength({min: 4, max: 255}).optional(),
+    body('firstName').isString().isLength({min: 3, max: 255}).optional(),
+    body('lastName').isString().isLength({min: 3, max: 255}).optional(),
     body('phone').isString().custom((phone) => {
         if (!/^[0-9]{9}$/.test(phone)) {
             throw new Error('Phone is not correct');

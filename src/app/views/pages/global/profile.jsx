@@ -9,9 +9,9 @@ import {displayLoader, hideLoader} from "../../../core/helpers";
 import {updateUserData} from "../../../core/state/slices/authSlice";
 
 const profile = yup.object().shape({
-    firstName: yup.string().trim().min(4, "first name length should be at least 4 characters")
+    firstName: yup.string().trim().min(3, "first name length should be at least 4 characters")
         .max(255, "first name cannot exceed more than 12 characters"),
-    lastName: yup.string().trim().min(4, "last name length should be at least 4 characters")
+    lastName: yup.string().trim().min(3, "last name length should be at least 4 characters")
         .max(255, "last name cannot exceed more than 12 characters"),
     email: yup.string().email("Field should contain a valid e-mail").max(255),
     phone: yup.string().trim().matches(/^[0-9]{9}$/, 'phone number must be correct'),
