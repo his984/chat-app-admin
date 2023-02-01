@@ -8,7 +8,7 @@ import {endpoints} from "../../../core/endpoint";
 import {post} from "../../../core/http_client";
 import {setOrUpdateAuthenticationInfo} from "../../../core/state/slices/authSlice";
 import {useDispatch} from "react-redux";
-
+import Logo from '../../../assets/logo.svg';
 const formSchema = Yup.object().shape({
     firstName: Yup.string().trim().min(3, "first name length should be at least 4 characters")
         .max(255, "first name cannot exceed more than 12 characters").required(),
@@ -59,7 +59,7 @@ export function Register({props, children}) {
     return (<GuestLayout>
         <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto  w-full sm:max-w-md lg:py-0">
             <a href="/" className="flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white">
-                <img className="w-8 h-8 mr-2" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/logo.svg"
+                <img className="w-8 h-8 mr-2" src={Logo}
                      alt="logo"/>
                 App Chat Admin
             </a>
