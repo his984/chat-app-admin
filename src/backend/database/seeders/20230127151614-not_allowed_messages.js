@@ -6,7 +6,9 @@ module.exports = {
     async up(queryInterface, Sequelize) {
         await queryInterface.bulkInsert('NotAllowedMessages', Array.from({length: 10}).map((i, v) => {
             return {
-                content: `bad ${v}`,
+                content: `bad_${v}`,
+                createdAt : new Date(),
+                updatedAt : new Date(),
             }
         }), {})
     },
