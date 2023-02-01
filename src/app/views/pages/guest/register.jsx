@@ -15,7 +15,7 @@ const formSchema = Yup.object().shape({
     lastName: Yup.string().trim().min(3, "last name length should be at least 4 characters").required()
         .max(255, "last name cannot exceed more than 12 characters").required(),
     email: Yup.string().email("Field should contain a valid e-mail").max(255),
-    phone: Yup.string().trim().matches(/^[0-9]{9}$/, 'phone number must be correct'),
+    phone: Yup.string().trim().matches(/^[0-9]{10}$/, 'phone number must be correct'),
     password: Yup.string()
         .required("Password is required")
         .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/, 'Password must be at least 8 characters long and contain at least one capital letter and special character'),
@@ -113,7 +113,7 @@ export function Register({props, children}) {
                             <input type="text" name="phone" id="phone"
                                    {...register("phone", {required: true})}
                                    className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                   placeholder="xxxxxxxxx" required=""/>
+                                   placeholder="xxxxxxxxxx" required=""/>
                             {errors.phone && <p className="mt-2 text-sm text-red-600 dark:text-red-500">
                                 {errors.phone?.type === 'required' ? 'This field is required' : errors.phone?.message}
                             </p>}

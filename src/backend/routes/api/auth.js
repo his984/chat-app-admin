@@ -23,7 +23,7 @@ authRouter.post('/register',
     body('firstName').isString().isLength({min: 3, max: 255}),
     body('lastName').isString().isLength({min: 3, max: 255}),
     body('phone').isString().custom((phone) => {
-        if (!/^[0-9]{9}$/.test(phone)) {
+        if (!/^[0-9]{10}$/.test(phone)) {
             throw new Error('Phone is not correct');
         }
         return true
@@ -65,7 +65,7 @@ authRouter.post('/profile',
     body('firstName').isString().isLength({min: 3, max: 255}).optional(),
     body('lastName').isString().isLength({min: 3, max: 255}).optional(),
     body('phone').isString().custom((phone) => {
-        if (!/^[0-9]{9}$/.test(phone)) {
+        if (!/^[0-9]{10}$/.test(phone)) {
             throw new Error('Phone is not correct');
         }
         return true

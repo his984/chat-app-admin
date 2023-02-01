@@ -14,7 +14,7 @@ const profile = yup.object().shape({
     lastName: yup.string().trim().min(3, "last name length should be at least 4 characters")
         .max(255, "last name cannot exceed more than 12 characters"),
     email: yup.string().email("Field should contain a valid e-mail").max(255),
-    phone: yup.string().trim().matches(/^[0-9]{9}$/, 'phone number must be correct'),
+    phone: yup.string().trim().matches(/^[0-9]{10}$/, 'phone number must be correct'),
     password: yup.string()
         .matches(/(^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})|(^$))/, 'Password must be at least 8 characters long and contain at least one capital letter and special character'),
     confirm_password: yup.string()
@@ -107,7 +107,7 @@ export function Profile() {
                                    defaultValue={userData.phone}
                                    {...register("phone", {required: true})}
                                    className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                   placeholder="xxxxxxxxx" required=""/>
+                                   placeholder="xxxxxxxxxx" required=""/>
                             {errors.phone && <p className="mt-2 text-sm text-red-600 dark:text-red-500">
                                 {errors.phone?.type === 'required' ? 'This field is required' : errors.phone?.message}
                             </p>}
