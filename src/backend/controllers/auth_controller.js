@@ -12,6 +12,7 @@ exports.signup = async (req, res) => {
         expiresIn: "1h"
     });
     await newUser.save();
+    res.cookie('accessToken', accessToken);
     res.json({
         data: {
             firstName: newUser.firstName,
@@ -21,7 +22,6 @@ exports.signup = async (req, res) => {
             role: newUser.role,
 
         },
-        accessToken
     })
 
 }
@@ -38,7 +38,7 @@ exports.login = async (req, res) => {
     const accessToken = jwt.sign({userId: user.id, role: user.role}, process.env.JWT_SECRET, {
         expiresIn: "1h"
     });
-    res.cookie('accessToken' , accessToken)  ;
+    res.cookie('accessToken', accessToken);
     res.status(200).json({
         data: {
             firstName: user.firstName,

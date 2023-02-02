@@ -20,7 +20,7 @@ export default function GuestLayout({props, children}) {
             navigate(`/${res.data.role}/`)
         }).catch(() => {
             dispatch(invokeToken())
-            navigate('/')
+            // navigate('/')
         }).finally(() => {
             hideLoader();
         })

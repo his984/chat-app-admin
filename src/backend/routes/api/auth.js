@@ -12,7 +12,8 @@ authRouter.post('/login',
     validatorMiddleware,
     function (req, res) {
         login(req, res).catch((reason) => {
-            console.log(reason)
+            //console.log(reason)
+            res.json(400)
         })
     });
 
