@@ -28,20 +28,9 @@ export default function GuestLayout({ props, children }) {
       });
   }, [is_authenticated]);
 
-        displayLoader()
-        get(endpoints.auth.profile).then((res) => {
-            dispatch(updateUserData(res))
-            navigate(`/${res.data.role}/`)
-        }).catch(() => {
-            dispatch(invokeToken())
-            // navigate('/')
-        }).finally(() => {
-            hideLoader();
-        })
-    }, [is_authenticated]);
-
-
-    return <div className="min-h-screen min-w-screen   overflow-x-hidden flex">
-        {children}
-    </div>;
+  return (
+    <div className="min-h-screen min-w-screen   overflow-x-hidden flex">
+      {children}
+    </div>
+  );
 }
