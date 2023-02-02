@@ -26,7 +26,7 @@ export function Chat() {
     const [currentUserAction, setCurrentUserAction] = useState({});
 
     if (!window.socket || window.socket.disconnected) {
-        window.socket = io('http://localhost:3002', {
+        window.socket = io('http://localhost:3001', {
             auth: {
                 token: localStorage.getItem('token'),
                 chatId: chatId
@@ -82,7 +82,7 @@ export function Chat() {
                 }])
             } else if (res.code === 403) {
                 navigate('/')
-            } else if (res.code === 404) {
+            } else if (res.code === 404 || res.code === 400 ) {
                 setShowAlert(true);
                 setAlertMessage(res.description)
                 setAlertColor('failure')
@@ -190,14 +190,19 @@ export function Chat() {
                                                     className="block ml-2 font-bold text-gray-900 dark:text-white ">{chat.subject}</span>
                                             </div>
 
-                                            <div className="hover:cursor-pointer" onClick={() => {
-                                                setShowAddUsersModal(true)
-                                            }}>
-                                                <img
-                                                    className="object-cover w-8 h-8 rounded-full "
-                                                    src={PlusIcon}
-                                                    alt="add users"/>
-                                            </div>
+
+                                            {
+                                                currentUser.role === 'admin' || currentUser.id === chat.createdBy ?
+                                                    <div className="hover:cursor-pointer" onClick={() => {
+                                                        setShowAddUsersModal(true)
+                                                    }}>
+                                                        <img
+                                                            className="object-cover w-8 h-8 rounded-full "
+                                                            src={PlusIcon}
+                                                            alt="add users"/>
+                                                    </div>
+                                                    : <></>
+                                            }
                                         </div>
 
                                         <div
@@ -216,7 +221,7 @@ export function Chat() {
                                                                                 <span
                                                                                     className="text-xs text-gray-900 dark:text-gray-400">By </span>
                                                                                 <span
-                                                                                    className="my-2 font-medium text-xs text-blue-600 hover:underline dark:text-blue-500 hover:cursor-pointer"> {message.sender.firstName + ' ' + message.sender.lastName}   </span>
+                                                                                    className="my-2 font-medium text-xs text-blue-600 hover:underline dark:text-blue-500 hover:cursor-pointer"> {message.sender.role === 'admin' ? 'Admin' : (message.sender.firstName + ' ' + message.sender.lastName)}   </span>
                                                                             </div>
                                                                     }
                                                                     <div

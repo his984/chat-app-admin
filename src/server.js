@@ -55,20 +55,28 @@ io.use(async (socket, next) => {
     const token = socket.handshake.auth.token;
     const chatId = socket.handshake.auth.chatId;
     const {userId, role} = isValidToken(token)
-    if (role !== 'admin' || !socket.user) {
-        const chatUser = await db.ChatUser.findOne({where: {userId, chatId, status: {[Op.in]: ['active', 'invited']}}})
-        if (!!chatUser) {
-            chatUser.status = 'active';
-            await chatUser.save()
-        } else {
-            return next(new Error(JSON.stringify({
-                code: 402
-            })));
+    if (!socket.user) {
+        if (role !== 'admin') {
+            const chatUser = await db.ChatUser.findOne({
+                where: {
+                    userId,
+                    chatId,
+                    status: {[Op.in]: ['active', 'invited']}
+                }
+            })
+            if (!!chatUser) {
+                chatUser.status = 'active';
+                await chatUser.save()
+            } else {
+                return next(new Error(JSON.stringify({
+                    code: 402
+                })));
+            }
         }
     }
     if (!socket.user) {
         socket.user = await db.User.findByPk(userId, {
-            attributes: ['id', 'firstName', 'lastName', 'email', 'phone']
+            attributes: ['id', 'firstName', 'lastName', 'email', 'phone' , 'role']
         })
 
         socket.chat = await db.Chat.findByPk(chatId)
@@ -80,7 +88,7 @@ io.use(async (socket, next) => {
                 {
                     model: db.User,
                     as: 'sender',
-                    attributes: ['id', 'firstName', 'lastName', 'email', 'phone']
+                    attributes: ['id', 'firstName', 'lastName', 'email', 'phone' , 'role']
                 }
             ]
         })).map((message) => {
@@ -103,14 +111,16 @@ io.on('connection', (socket) => {
         messages: socket.messages
     })
 
-    socket.on('message', (message, callback) => {
-        db.ChatUser.findOne({
-            where: {
-                userId: socket.user.id,
-                chatId: socket.chat.id
-            },
-            attributes: ['status']
-        }).then((chatUser) => {
+    socket.on('message', async (message, callback) => {
+        if (socket.user.role !== 'admin') {
+            const chatUser = await db.ChatUser.findOne({
+                where: {
+                    userId: socket.user.id,
+                    chatId: socket.chat.id
+                },
+                attributes: ['status']
+            });
+
             if (chatUser.status === 'blocked') {
                 callback({
                     code: 403,
@@ -121,23 +131,19 @@ io.on('connection', (socket) => {
                     code: 404,
                     description: 'you are suspend'
                 });
-            } else {
-
-                checkMessage(message, socket.user.id, socket.chat.id).then((message) => {
-                    io.to(socket.chat.id).except(socket.id).emit('message', message);
-                    callback({
-                        code: 200,
-                        description: 'message sent',
-                    })
-                }).catch((er) => {
-                    callback({
-                        code: 400,
-                        description: er.message
-                    })
-                })
-
-
             }
+        }
+        checkMessage(message, socket.user.id, socket.chat.id).then((message) => {
+            io.to(socket.chat.id).except(socket.id).emit('message', message);
+            callback({
+                code: 200,
+                description: 'message sent',
+            })
+        }).catch((er) => {
+            callback({
+                code: 400,
+                description: er.message
+            })
         })
 
     })
@@ -154,10 +160,10 @@ io.on('connection', (socket) => {
                 }
             })).then(() => {
 
-                 getChatUsers(socket.user.id, socket.chat.id).then((users) => {
-                     socket.users = users
-                     io.to(socket.chat.id).emit('update-users', users)
-                 })
+                getChatUsers(socket.user.id, socket.chat.id).then((users) => {
+                    socket.users = users
+                    io.to(socket.chat.id).emit('update-users', users)
+                })
 
 
                 callback({

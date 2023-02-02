@@ -23,7 +23,7 @@ exports.checkMessage = async (message, senderId, chatId) => {
             }
         )
     }) > 0) {
-        throw new Error('message content is not allowed')
+        throw new Error('Message content is not allowed')
     }
 
     const messageModel = await db.Message.create({

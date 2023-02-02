@@ -48,6 +48,7 @@
     "jsonwebtoken": "^9.0.0",
     "localforage": "^1.10.0",
     "mysql2": "^3.0.1",
+    "node-random-name": "^1.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.42.1",
