@@ -11,7 +11,7 @@ export default defineConfig({
     plugins: [react()],
     server: {
         proxy: {
-            '/sockets': {
+            '/socket.io': {
                 target: `http://localhost:${PORT}`,
                 changeOrigin: true,
             },

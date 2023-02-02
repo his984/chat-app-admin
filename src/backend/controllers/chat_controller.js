@@ -67,21 +67,37 @@ exports.getChats = async (req, res) => {
         as: 'owner',
         attributes: ['firstName', 'lastName', 'email', 'id']
     })
+    query['include'].push({
+        model: db.Message,
+        where: {
+            senderId: req.auth.userId,
+        },
+        separate: true,
+        limit: 1,
+        order: [['id', 'DESC']],
+        attributes: ['id']
+    })
     if (role !== 'admin') {
 
         query['include'].push({
             model: db.ChatUser,
             where: {
                 'userId': req.auth.userId,
-                'status': 'active'
+                'status': {[Op.in]: ['active', 'blocked', 'suspend']}
             },
-            attributes: []
+            attributes: ['status']
         })
 
     }
     const result = await db.Chat.findAndCountAll(query);
-    result.rows = result.rows.map(({id, subject, owner}) => {
-        return {id, subject, owner};
+    result.rows = result.rows.map(({id, subject, owner, Messages, ChatUsers}) => {
+        return {
+            id,
+            subject,
+            owner,
+            lastMessage: Messages[0] ?? {id: -1},
+            status: (ChatUsers && ChatUsers[0] ? ChatUsers[0].status : 'active')
+        };
     })
     res.json(result)
 

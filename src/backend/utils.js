@@ -7,7 +7,6 @@ exports.isValidToken = (token) => {
     try {
         return jwt.verify(token, process.env.JWT_SECRET);
     } catch (err) {
-        console.log(err)
         return false;
     }
 }
@@ -65,4 +64,21 @@ exports.getChatUsers = async (currentUserId, chatId) => {
             ...User
         }
     })
+}
+
+exports.getChatMessages = async (chatId) => {
+    return  (await db.Message.findAll({
+        where: {
+            chatId: chatId,
+        },
+        include: [
+            {
+                model: db.User,
+                as: 'sender',
+                attributes: ['id', 'firstName', 'lastName', 'email', 'phone', 'role']
+            }
+        ]
+    })).map((message) => {
+        return message.get({plain: true});
+    });
 }

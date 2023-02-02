@@ -4,6 +4,7 @@ const {getUsers} = require("../../controllers/user_controller");
 const {body} = require("express-validator");
 const db = require("../../database/models");
 const {createChat, getChats, getChat, getInvitations, rejectInvitation} = require("../../controllers/chat_controller");
+const {validatorMiddleware} = require("../../middlewares/validator");
 
 
 chatsRouter.get('/', (req, res) => {
@@ -34,7 +35,8 @@ chatsRouter.post('/'
                 return Promise.reject('invalid selected users');
             }
         })
-    })
+    }),
+    validatorMiddleware
     , (req, res) => {
         createChat(req, res).catch((er) => {
             res.status(400).json()

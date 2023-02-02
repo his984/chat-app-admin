@@ -17,7 +17,6 @@ module.exports = {
                     password,
                     createdAt: new Date(date.getDate() - v),
                     updatedAt: new Date(date.getDate() - v),
-                    accessToken: 'no token'
                 }
             }), {})
         } catch (e) {

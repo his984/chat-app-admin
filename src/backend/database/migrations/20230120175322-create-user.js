@@ -31,9 +31,6 @@ module.exports = {
                 default: "normal",
                 type: Sequelize.ENUM('normal', 'admin'),
             },
-            accessToken: {
-                type: Sequelize.TEXT
-            },
             createdAt: {
                 allowNull: false,
                 type: Sequelize.DATE

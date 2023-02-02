@@ -1,7 +1,7 @@
 function get(url) {
     return fetch(url, {
         headers: {
-            'Authorization': 'Bearer ' + localStorage.getItem('token'),
+            // 'Authorization': 'Bearer ' + localStorage.getItem('token'),
             'Accept': 'application/json',
         }
     })
@@ -19,7 +19,7 @@ function post(url, data, onSuccess = () => {
     return fetch(url, {
         method: 'POST',
         headers: {
-            'Authorization': 'Bearer ' + localStorage.getItem('token'),
+            // 'Authorization': 'Bearer ' + localStorage.getItem('token'),
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         },

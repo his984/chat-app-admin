@@ -9,9 +9,8 @@ exports.signup = async (req, res) => {
     const hashedPassword = await hashPassword(password);
     const newUser = await db.User.create({firstName, lastName, phone, email, password: hashedPassword, role: "normal"});
     const accessToken = jwt.sign({userId: newUser.id, role: newUser.role}, process.env.JWT_SECRET, {
-        expiresIn: "30d"
+        expiresIn: "1h"
     });
-    newUser.accessToken = accessToken;
     await newUser.save();
     res.json({
         data: {
@@ -37,10 +36,9 @@ exports.login = async (req, res) => {
         ]
     });
     const accessToken = jwt.sign({userId: user.id, role: user.role}, process.env.JWT_SECRET, {
-        expiresIn: "30d"
+        expiresIn: "1h"
     });
-    user.accessToken = accessToken;
-    await user.save();
+    res.cookie('accessToken' , accessToken)  ;
     res.status(200).json({
         data: {
             firstName: user.firstName,

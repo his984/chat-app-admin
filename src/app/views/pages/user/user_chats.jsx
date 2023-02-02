@@ -61,7 +61,7 @@ export function UserChats() {
                     className={`${active === 1 ? 'hidden' : ''}  p-4 rounded-lg bg-gray-50 dark:bg-gray-800 max-w-2xl mx-auto overflow-x-auto`}
                     role="tabpanel"
                 >
-                    <ChatTable withPagination={true} beforeLoad={() => {
+                    <ChatTable filterable={true} withPagination={true} beforeLoad={() => {
                         setIsLoading(true)
                     }} afterLoad={() => {
                         setIsLoading(false)

@@ -4,12 +4,14 @@ const path = require('path');
 const express = require('express');
 const apiRouter = require("./backend/routes/api");
 const {expressjwt: jwt} = require("express-jwt");
+const cookieParser = require('cookie-parser');
+const cookieParserSocketio = require('socket.io-cookie');
 const cors = require("cors");
 const http = require('http');
 const app = express();
 const server = http.createServer(app);
 const {Server} = require("socket.io");
-const {isValidToken, checkMessage, getChatUsers} = require("./backend/utils");
+const {isValidToken, checkMessage, getChatUsers, getChatMessages} = require("./backend/utils");
 const db = require("./backend/database/models");
 const {Op} = require("sequelize");
 const io = new Server(server, {
@@ -20,13 +22,17 @@ const io = new Server(server, {
 
 app.use(cors());
 app.use(express.json());
+app.use(cookieParser(process.env.COOKIES_SECRET, {
+    secure: false,
+    httpOnly: false,
+    maxAge: 1000 * 60 * 60,
+}));
+
 app.use(
     jwt({
         secret: process.env.JWT_SECRET,
         algorithms: ["HS256"],
-
-
-        getToken: function fromHeaderOrQuerystring(req) {
+        getToken: function fromHeaderOrQuerystringOrCookies(req) {
             if (
                 req.headers.authorization &&
                 req.headers.authorization.split(" ")[0] === "Bearer"
@@ -36,6 +42,8 @@ app.use(
                 return req.query.accessToken;
             } else if (req.body && req.body.accessToken) {
                 return req.body.accessToken;
+            } else if (req.cookies && req.cookies.accessToken) {
+                return req.cookies.accessToken;
             }
             return null;
         },
@@ -51,10 +59,18 @@ app.use('/api', apiRouter);
 app.use(express.static('dist/app'));
 
 
+io.use(cookieParserSocketio)
 io.use(async (socket, next) => {
-    const token = socket.handshake.auth.token;
+
+    const token = socket.handshake.headers.cookie.accessToken;
     const chatId = socket.handshake.auth.chatId;
-    const {userId, role} = isValidToken(token)
+    const {userId, role} = isValidToken(token ?? "")
+
+    if (!userId || !chatId) {
+        return next(new Error(JSON.stringify({
+            code: 402
+        })));
+    }
     if (!socket.user) {
         if (role !== 'admin') {
             const chatUser = await db.ChatUser.findOne({
@@ -76,24 +92,11 @@ io.use(async (socket, next) => {
     }
     if (!socket.user) {
         socket.user = await db.User.findByPk(userId, {
-            attributes: ['id', 'firstName', 'lastName', 'email', 'phone' , 'role']
+            attributes: ['id', 'firstName', 'lastName', 'email', 'phone', 'role']
         })
 
         socket.chat = await db.Chat.findByPk(chatId)
-        socket.messages = (await db.Message.findAll({
-            where: {
-                chatId: chatId,
-            },
-            include: [
-                {
-                    model: db.User,
-                    as: 'sender',
-                    attributes: ['id', 'firstName', 'lastName', 'email', 'phone' , 'role']
-                }
-            ]
-        })).map((message) => {
-            return message.get({plain: true});
-        });
+        socket.messages = await getChatMessages(chatId)
         socket.users = await getChatUsers(socket.user.id, socket.chat.id)
     }
     return next();
@@ -148,7 +151,35 @@ io.on('connection', (socket) => {
 
     })
     if (socket.user.role === 'admin' || socket.chat.createdBy === socket.user.id) {
+        socket.on('delete-message', (messageId, callback) => {
 
+            if (socket.user.role === 'admin') {
+                db.Message.destroy({
+                    where: {
+                        id: messageId
+                    }
+                }).then(() => {
+                    getChatMessages(socket.chat.id).then((msgs) => {
+                        socket.messages = msgs;
+                        io.to(socket.chat.id).emit('update-messages', socket.messages)
+                    })
+
+
+                })
+                callback({
+                    code: 200,
+                    description: 'Message deleted successfully'
+                })
+
+            } else {
+                callback({
+                    code: 404,
+                    description: 'Not Allowed to delete Message'
+                })
+            }
+
+
+        })
         socket.on('add-users', (selectedUsers, callback) => {
 
             db.ChatUser.bulkCreate(selectedUsers.map(userId => {

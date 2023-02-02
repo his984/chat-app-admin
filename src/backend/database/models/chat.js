@@ -13,10 +13,11 @@ module.exports = (sequelize, DataTypes) => {
             Chat.belongsTo(models.User, {
                 foreignKey: 'createdBy',
                 onDelete: 'CASCADE',
-                as : 'owner'
+                as: 'owner'
             });
-           Chat.belongsToMany(models.User, {through: models.ChatUser , foreignKey : 'chatId'})
-            Chat.hasMany(models.ChatUser , { foreignKey : 'chatId' })
+            Chat.belongsToMany(models.User, {through: models.ChatUser, foreignKey: 'chatId'})
+            Chat.hasMany(models.ChatUser, {foreignKey: 'chatId'})
+            Chat.hasMany(models.Message, {foreignKey: 'chatId'})
 
         }
     }

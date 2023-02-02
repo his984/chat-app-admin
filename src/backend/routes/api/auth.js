@@ -3,16 +3,14 @@ const authRouter = express.Router();
 const {body, validationResult} = require('express-validator');
 const {signup, login, getProfile, updateProfile} = require("../../controllers/auth_controller");
 const db = require("../../database/models");
+const {validatorMiddleware} = require("../../middlewares/validator");
 
 // login
 authRouter.post('/login',
     body('email').isEmail(),
     body('password').isLength({min: 3, max: 12}),
+    validatorMiddleware,
     function (req, res) {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({errors: errors.array()});
-        }
         login(req, res).catch((reason) => {
             console.log(reason)
         })
@@ -50,11 +48,8 @@ authRouter.post('/register',
         }
         return true;
     }),
+    validatorMiddleware,
     function (req, res) {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({errors: errors.array()});
-        }
         signup(req, res).catch((reason) => {
             res.status(400)
         })
@@ -93,11 +88,8 @@ authRouter.post('/profile',
         }
         return true;
     }),
+    validatorMiddleware,
     (req, res) => {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({errors: errors.array()});
-        }
         updateProfile(req, res).catch((reason) => {
             res.status(400)
         })
@@ -107,6 +99,11 @@ authRouter.get('/profile',
         getProfile(req, res).catch((reason) => {
             res.status(400)
         })
+    })
+authRouter.post('/logout',
+    (req, res) => {
+        res.cookie('accessToken', '')
+        res.json({})
     })
 
 

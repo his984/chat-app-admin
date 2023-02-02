@@ -15,7 +15,7 @@ export function AdminChats() {
                     <Spinner aria-label="Center-aligned Loading spinner" size="xl"/>
                 </div> :
                 <div className="pt-4 overflow-x-auto">
-                    <ChatTable withPagination={true} beforeLoad={() => {
+                    <ChatTable filterable={true} withPagination={true} beforeLoad={() => {
                         setIsLoading(true)
                     }} afterLoad={() => {
                         setIsLoading(false)
