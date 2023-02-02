@@ -4,6 +4,7 @@
 + Clone the repo.
 + copy .env.example file to .env in the project's root path 
 + Add database configuration (`database_name` . `username`, `password`) in the file `.env`
++ Add your JWT and COOKIES secrets in new env file 
 + Create database called "chat_app_admin" if you didn't change database_name .
     + Run the following SQL query to create the database:
         + ` create database chat_app_admin;`
