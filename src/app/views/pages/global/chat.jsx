@@ -272,11 +272,8 @@ export function Chat() {
                                     <span className="my-2 font-medium text-xs text-blue-600 hover:underline dark:text-blue-500 hover:cursor-pointer">
                                       {message.sender.role === "admin"
                                         ? "Admin"
-                                        : ` ${
-                                            message.sender.firstName +
-                                            " " +
-                                            message.sender.lastName
-                                          }`}
+                                        : ` ${message.sender.firstName}
+                                             ${message.sender.lastName}`}
                                     </span>
                                   </div>
                                 )}
