@@ -50,11 +50,6 @@ export function ChatModal({
     get(`${endpoints.users.r}?limit=100&search=${search}`)
       .then((data) => {
         setUsers(data.rows);
-        setSelectedUsers(
-          data.rows
-            .filter((user) => selectedUsers.includes(user.id))
-            .map((u) => u.id)
-        );
       })
       .catch(() => {})
       .finally(() => {
