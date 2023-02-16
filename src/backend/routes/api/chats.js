@@ -16,7 +16,7 @@ const { Op } = require("sequelize");
 chatsRouter.get("/", (req, res) => {
   getChats(req, res).catch((reason) => {
     console.log(reason);
-    res.status(400).json();
+    res.status(400).json({ row: [] });
   });
 });
 chatsRouter.get("/invitations", (req, res) => {
